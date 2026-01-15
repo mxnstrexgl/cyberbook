@@ -1,0 +1,92 @@
+# CI/Security Pipeline
+# Runs on: push, pull_request
+# Purpose: Security scanning, secret detection, linting
+
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+jobs:
+  # Secret Scanning - Prevent secrets from being committed
+  secret-scan:
+    name: Secret Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run TruffleHog Secret Scanner
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+
+  # Security Scanning for Node.js projects
+  security-node:
+    name: Security Scan (Node.js)
+    runs-on: ubuntu-latest
+    if: hashFiles('package-lock.json', 'package.json', 'npm-shrinkwrap.json') != ''
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+  # Security Scanning for Python projects
+  security-python:
+    name: Security Scan (Python)
+    runs-on: ubuntu-latest
+    if: hashFiles('requirements.txt', 'pyproject.toml', 'uv.lock') != ''
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Safety check
+        run: |
+          pip install safety
+          safety check --json || true
+        continue-on-error: true
+
+  # Infrastructure Security (Terraform/OpenTofu)
+  security-infra:
+    name: Security Scan (Infrastructure)
+    runs-on: ubuntu-latest
+    if: hashFiles('**/*.tf') != ''
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: TFSec Scan
+        uses: aquasecurity/tfsec-action@v0.1.0
+        with:
+          working_directory: .
+        continue-on-error: true
+
+  # Basic validation
+  validate:
+    name: Basic Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for large files
+        run: |
+          find . -type f -size +5M -not -path "./.git/*" -exec ls -lh {} \; | head -20
+          echo "If any files above are listed, consider using Git LFS"
+
+      - name: Check .gitignore presence
+        run: |
+          if [ ! -f .gitignore ]; then
+            echo "::warning::.gitignore not found"
+          fi

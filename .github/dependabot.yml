@@ -1,0 +1,31 @@
+version: 2
+updates:
+  # GitHub Actions dependencies
+  - directory: /
+    package-ecosystem: "github-actions"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+
+  # npm dependencies
+  - directory: /
+    package-ecosystem: "npm"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  # pip dependencies
+  - directory: /
+    package-ecosystem: "pip"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
