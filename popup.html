@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Cyberbook</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <h1>📚 Cyberbook</h1>
+
+    <div class="section">
+      <button id="saveBookmarkBtn" class="btn btn-primary w-full">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+          <line x1="12" y1="7" x2="12" y2="13"></line>
+          <line x1="9" y1="10" x2="15" y2="10"></line>
+        </svg>
+        Save This Page
+      </button>
+    </div>
+
+    <div id="status" class="status" aria-live="polite"></div>
+
+    <div class="section">
+      <div class="search-box">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="searchQuery" placeholder="Search by meaning..." class="search-input">
+      </div>
+    </div>
+
+    <div class="stats">
+      <span id="bookmarkCount">0 bookmarks</span>
+      <span class="dot">•</span>
+      <span id="bookmarkLimit" class="muted">1000 max</span>
+    </div>
+
+    <div id="searchResults" class="bookmark-list">
+      <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <p>No bookmarks yet</p>
+        <p class="muted">Save pages to search them by meaning</p>
+      </div>
+    </div>
+
+    <div id="recentSection" class="section hidden">
+      <h3 class="section-title">Recent</h3>
+      <div id="recentList" class="bookmark-list"></div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
