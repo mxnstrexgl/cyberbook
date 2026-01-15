@@ -67,7 +67,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: TFSec Scan
-        uses: aquasecurity/tfsec-action@v0.1.0
+        uses: aquasecurity/tfsec-action@v1.0.3
         with:
           working_directory: .
         continue-on-error: true
