@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -36,7 +36,7 @@ jobs:
     if: hashFiles('package-lock.json', 'package.json', 'npm-shrinkwrap.json') != ''
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Run npm audit
         run: npm audit --audit-level=moderate
@@ -49,7 +49,7 @@ jobs:
     if: hashFiles('requirements.txt', 'pyproject.toml', 'uv.lock') != ''
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Run Safety check
         run: |
@@ -64,7 +64,7 @@ jobs:
     if: hashFiles('**/*.tf') != ''
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: TFSec Scan
         uses: aquasecurity/tfsec-action@v0.1.0
@@ -78,7 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Check for large files
         run: |
