@@ -44,7 +44,7 @@
             };
 
         } catch (error) {
-            console.error('[Cyberbook] Content extraction failed:', error);
+            console.error('[Stash] Content extraction failed:', error);
             return {
                 title: document.title,
                 textContent: document.body?.innerText?.substring(0, 10000) || '',
@@ -72,18 +72,50 @@
         return text.trim().split(/\s+/).filter(w => w.length > 0).length;
     }
 
-    // Listen for save requests from popup
+    /**
+     * Get current text selection
+     */
+    function getSelection() {
+        const selection = window.getSelection();
+        if (!selection || selection.rangeCount === 0) {
+            return null;
+        }
+        const text = selection.toString().trim();
+        if (text.length === 0) {
+            return null;
+        }
+        return {
+            text,
+            range: selection.getRangeAt(0)
+        };
+    }
+
+    // Listen for requests from popup and background
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-        if (message.action === 'EXTRACT_CONTENT') {
-            const content = extractPageContent();
-            sendResponse({
-                success: true,
-                ...content,
-                url: window.location.href
-            });
-            return true;
+        switch (message.action) {
+            case 'EXTRACT_CONTENT':
+                const content = extractPageContent();
+                sendResponse({
+                    success: true,
+                    ...content,
+                    url: window.location.href
+                });
+                return true;
+
+            case 'GET_SELECTION':
+                const selection = getSelection();
+                sendResponse({
+                    success: !!selection,
+                    selection: selection?.text || null,
+                    url: window.location.href,
+                    title: document.title
+                });
+                return true;
+
+            default:
+                return false;
         }
     });
 
-    console.log('[Cyberbook] Content script loaded');
+    console.log('[Stash] Content script loaded');
 })();

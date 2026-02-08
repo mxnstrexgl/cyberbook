@@ -1,6 +1,6 @@
-// offscreen.js - ML inference for Cyberbook
-// FIXES APPLIED:
-// - Lazy model loading (not on warmup)
+// offscreen.js - ML inference for Stash (formerly Cyberbook)
+// FEATURES:
+// - Lazy model loading with progress reporting
 // - Queue management for embedding generation
 // - Timeout handling for model loading
 // - Persistent model promise (no reset on success)
@@ -15,9 +15,10 @@ const EMBEDDING_TIMEOUT_MS = 30000; // 30 seconds per embedding
 let modelPromise = null;
 let embeddingQueue = [];
 let isProcessingQueue = false;
+let loadingProgress = 0;
 
 /**
- * Load the embedding model with timeout
+ * Load the embedding model with timeout and progress reporting
  * Promise is cached - model only loads once
  */
 async function getModel() {
@@ -25,23 +26,39 @@ async function getModel() {
         return modelPromise;
     }
 
-    console.log('[Cyberbook Offscreen] Loading model...');
+    console.log('[Stash Offscreen] Loading model...');
     const startTime = performance.now();
+    loadingProgress = 0;
 
     modelPromise = Promise.race([
         pipeline('feature-extraction', MODEL_ID, {
-            quantized: true
+            quantized: true,
+            progress_callback: (progress) => {
+                if (progress.progress !== undefined) {
+                    loadingProgress = Math.round(progress.progress);
+                    // Broadcast progress to popup (if listening)
+                    try {
+                        chrome.runtime.sendMessage({
+                            type: 'MODEL_PROGRESS',
+                            progress: loadingProgress,
+                            status: progress.status || 'loading'
+                        }).catch(() => {}); // Ignore if no listeners
+                    } catch (_) {}
+                }
+            }
         }),
-        new Promise((_, reject) => 
+        new Promise((_, reject) =>
             setTimeout(() => reject(new Error('Model load timeout')), MODEL_TIMEOUT_MS)
         )
     ]).then(model => {
         const elapsed = Math.round(performance.now() - startTime);
-        console.log(`[Cyberbook Offscreen] Model loaded in ${elapsed}ms`);
+        console.log(`[Stash Offscreen] Model loaded in ${elapsed}ms`);
+        loadingProgress = 100;
         return model;
     }).catch(error => {
         // Reset promise on failure so retry is possible
         modelPromise = null;
+        loadingProgress = 0;
         throw error;
     });
 
@@ -95,7 +112,7 @@ async function processQueue() {
             const embedding = await generateEmbedding(text);
             resolve({ success: true, embedding });
         } catch (error) {
-            console.error('[Cyberbook Offscreen] Embedding error:', error);
+            console.error('[Stash Offscreen] Embedding error:', error);
             reject({ success: false, error: error.message });
         }
     }
@@ -128,7 +145,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             sendResponse({
                 modelLoaded: modelPromise !== null,
                 queueLength: embeddingQueue.length,
-                isProcessing: isProcessingQueue
+                isProcessing: isProcessingQueue,
+                loadingProgress
             });
             return true;
 
@@ -138,4 +156,4 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 });
 
-console.log('[Cyberbook Offscreen] Ready');
+console.log('[Stash Offscreen] Ready');
