@@ -44,7 +44,7 @@
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; style-src 'self'"
   },
   "offline_enabled": true,
-  "homepage_url": "https://github.com/mxnstrexgl/cyberbook",
+  "homepage_url": "https://github.com/lilbusiness/cyberbook",
   "commands": {
     "save-page": {
       "suggested_key": {
