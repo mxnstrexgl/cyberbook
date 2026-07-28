@@ -5,7 +5,7 @@
 // - Timeout handling for model loading
 // - Persistent model promise (no reset on success)
 
-import { pipeline } from '@xenova/transformers';
+import { pipeline } from '@huggingface/transformers';
 
 const MODEL_ID = 'Xenova/all-MiniLM-L6-v2';
 const MODEL_TIMEOUT_MS = 120000; // 2 minutes for initial download
@@ -32,7 +32,7 @@ async function getModel() {
 
     modelPromise = Promise.race([
         pipeline('feature-extraction', MODEL_ID, {
-            quantized: true,
+            dtype: 'q8',
             progress_callback: (progress) => {
                 if (progress.progress !== undefined) {
                     loadingProgress = Math.round(progress.progress);

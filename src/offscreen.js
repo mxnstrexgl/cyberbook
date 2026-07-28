@@ -1,7 +1,7 @@
 // offscreen.js - ML Pipeline for Cyberbook
 // FIXES: Lazy model loading, queue management, timeout handling
 
-import { pipeline, env } from '@xenova/transformers';
+import { pipeline, env } from '@huggingface/transformers';
 
 const MODEL_CONFIG = Object.freeze({
     MODEL_ID: 'Xenova/all-MiniLM-L6-v2',
@@ -48,7 +48,7 @@ async function getEmbeddingPipeline() {
         'feature-extraction',
         MODEL_CONFIG.MODEL_ID,
         {
-            quantized: MODEL_CONFIG.QUANTIZED,
+            dtype: MODEL_CONFIG.QUANTIZED ? 'q8' : 'fp32',
             progress_callback: (progress) => {
                 if (progress.status === 'downloading') {
                     console.log(`[Offscreen] Downloading: ${progress.file} (${Math.round(progress.progress)}%)`);

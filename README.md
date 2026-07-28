@@ -51,7 +51,7 @@ npm run build
 
 ## Technical Notes
 
-- Uses `@xenova/transformers` for in-browser ML inference
+- Uses `@huggingface/transformers` for in-browser ML inference
 - Model: `Xenova/all-MiniLM-L6-v2` (~23MB, downloaded on first use)
 - Embeddings are 384-dimensional vectors
 - Search combines cosine similarity (70%) + BM25 full-text (30%)
