@@ -26,12 +26,21 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Run TruffleHog Secret Scanner
+      - name: Run TruffleHog Secret Scanner (push)
+        if: github.event_name == 'push'
         uses: trufflesecurity/trufflehog@17456f8c7d042d8c82c9a8ca9e937231f9f42e26 # v3.95.2
         with:
           path: ./
-          base: ${{ github.event.repository.default_branch }}
-          head: HEAD
+          base: ${{ github.event.before }}
+          head: ${{ github.sha }}
+
+      - name: Run TruffleHog Secret Scanner (pull request)
+        if: github.event_name == 'pull_request'
+        uses: trufflesecurity/trufflehog@17456f8c7d042d8c82c9a8ca9e937231f9f42e26 # v3.95.2
+        with:
+          path: ./
+          base: ${{ github.event.pull_request.base.sha }}
+          head: ${{ github.event.pull_request.head.sha }}
 
   # Security Scanning for Node.js projects
   security-node:
