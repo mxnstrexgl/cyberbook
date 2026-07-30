@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@mozilla/readability": "0.6.0",
-    "@orama/orama": "2.0.0",
+    "@orama/orama": "2.1.1",
     "@huggingface/transformers": "4.2.0",
     "idb": "8.0.3"
   },
