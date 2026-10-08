@@ -28,7 +28,7 @@ jobs:
 
       - name: Run TruffleHog Secret Scanner (push)
         if: github.event_name == 'push'
-        uses: trufflesecurity/trufflehog@17456f8c7d042d8c82c9a8ca9e937231f9f42e26 # v3.95.2
+        uses: trufflesecurity/trufflehog@0186870afd2c4a90def791d80260923ba583d076 # v3.98.0
         with:
           path: ./
           base: ${{ github.event.before }}
@@ -36,7 +36,7 @@ jobs:
 
       - name: Run TruffleHog Secret Scanner (pull request)
         if: github.event_name == 'pull_request'
-        uses: trufflesecurity/trufflehog@17456f8c7d042d8c82c9a8ca9e937231f9f42e26 # v3.95.2
+        uses: trufflesecurity/trufflehog@0186870afd2c4a90def791d80260923ba583d076 # v3.98.0
         with:
           path: ./
           base: ${{ github.event.pull_request.base.sha }}
